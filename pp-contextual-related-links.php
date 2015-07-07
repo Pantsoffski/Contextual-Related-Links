@@ -13,7 +13,7 @@ include "functions.php";
 
 add_action('admin_menu', 'pp_contextual_related_links_setup_menu');
 add_action('admin_enqueue_scripts', 'pp_css_contextual_related_links');
-add_filter( 'the_content', 'pp_contextual_related_links_related_tags' );
+add_filter( 'the_content', 'pp_contextual_related_links_related_tags2' );
 
 function pp_css_contextual_related_links(){
 	wp_enqueue_style('contextual-related-links-style', plugins_url('style.css', __FILE__));
