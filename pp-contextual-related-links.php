@@ -21,12 +21,13 @@ function pp_css_contextual_related_links(){
 
 function pp_contextual_related_links_setup_menu(){
 	include 'pp-options.php';
-	add_menu_page('Contextual Related Links Options', 'Contextual Related Links Options', 'administrator', 'acset', 'contextual_related_links_settings');
+	add_menu_page('Contextual Related Links', 'Contextual Related Links', 'administrator', 'crlset', 'contextual_related_links_settings');
 	add_action( 'admin_init', 'register_contextual_related_links_settings' );
 }
 
 function register_contextual_related_links_settings() {
-	register_setting( 'contextual_related_links_settings_group', 'contextual_related_links_settings');
+	register_setting( 'contextual-related-links-settings-group', 'banned_tags');
+	register_setting( 'contextual-related-links-settings-group', 'include_tags');
 }
 
 ?>
