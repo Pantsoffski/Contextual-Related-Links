@@ -2,7 +2,7 @@
 
 function pp_contextual_related_links_tags($content){
 	if(is_singular('post')){
-		$tags = get_the_tags();
+		$tags = get_the_tags(); //returns tags assigned to the post
 		foreach($tags as $tag) {
     		$taglink = get_tag_link($tag->term_id);
     		$tagname = "/".$tag->name."/";
@@ -44,19 +44,21 @@ function pp_contextual_related_links_related_tags($content){
 	return $content;
 }
 
-function pp_contextual_related_links_related_tags2($content){
+function pp_contextual_related_links_related_posts_with_tags($content){
 	if(is_singular('post')) {
 		$postid = get_the_ID();
 		$tags = get_tags(); //retrieve all tags
 		foreach($tags as $tag){
 			$tagname = "/".$tag->name."/i";
+			$tagstoignore = pp_contextual_related_links_ignored_tags_ids();
 			if(preg_match($tagname, $content, $match)){ //if tag is inside content
 				$args = array( //arguments for WP_Query
 					'orderby' => 'date',
 					'nopaging' => 'true',
 					'posts_per_page' => 1,
 					'tag_slug__in' => array($tag->name),
-					'post__not_in' => array($postid)
+					'post__not_in' => array($postid),
+					'tag__not_in' => $tagstoignore
 				);
 				$query = new WP_Query($args);
 				if($query->have_posts()){ //if WP-Query have posts
@@ -69,7 +71,33 @@ function pp_contextual_related_links_related_tags2($content){
 			}
 		}
 	}
+	wp_reset_postdata();
 	return $content;
+}
+
+function pp_contextual_related_links_ignored_tags_ids(){
+	$ignoredtags = esc_attr(get_option('banned_tags'));
+	$search = "/(,\s+)|(\s+,)|(\s+)/i";
+	$ignoredtags = preg_replace($search, ",", $ignoredtags);
+	$ignoredtags = explode(",", $ignoredtags);
+	foreach($ignoredtags as $tag){
+		$tags = get_term_by('name', "$tag", 'post_tag');
+		if($tags){
+			$tagsid[] = $tags->term_id;
+		}
+	}
+	if(!isset($tagsid)){
+		$tagsid = array(); 
+	}
+	return $tagsid;
+}
+
+function pp_contextual_related_links_included_tags(){
+	$includedtags = esc_attr(get_option('include_tags'));
+	$search = "/(,\s+)|(\s+,)|(\s+)/i";
+	$includedtags = preg_replace($search, ",", $ignoredtags);
+
+	return $includedtags;
 }
 
 ?>
