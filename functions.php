@@ -16,11 +16,13 @@ function pp_contextual_related_links_tags($content){
 function pp_contextual_related_links_related_tags($content){
 	if(is_singular('post')) {
 		$postid = get_the_ID();
+		$contentlenght = strlen($content) / 2; //lenght of contet / 2
+        $content1 = substr($content, 0, $contentlenght); //first half of content
+        $content2 = substr($content, $contentlenght); //second half of content
 		$charstoremove = array("!", "#", "$", "%", "^", "*", "(", ")", "-", "[", "]", "{", "}", ":", ";", "?", "<", ">", "+", ",", ".");
 		$textprepare = strip_tags($content);
 		$textprepare = str_replace($charstoremove, "", $textprepare);
-		$textprepare = explode(" ", $textprepare);
-		$tagged = '';
+		$textprepare = explode(" ", $textprepare); //put words to array
 		foreach($textprepare as $tag){
 			$args = array(
 					'orderby' => 'date',
@@ -36,7 +38,15 @@ function pp_contextual_related_links_related_tags($content){
 			    $tagname = "/".$tag."/";
 			    $postlink = get_permalink($id);
         		$replacement = "<a href='$postlink'>$tag</a>";
-				$content = preg_replace($tagname, $replacement, $content);
+        		if(get_option('contextual_related_links_links_where')==1){ //if user wants first half of content
+					$content = preg_replace($tagname, $replacement, substr($content, 0, $contentlenght));
+					$content = $content.$content2;
+				}elseif(get_option('contextual_related_links_links_where')==2){ //if user wants second half of content
+					$content = preg_replace($tagname, $replacement, substr($content, $contentlenght));
+					$content = $content1.$content;
+				}else{ //if user wants entire content
+					$content = preg_replace($tagname, $replacement, $content);
+				}
 			}
 		}
 		wp_reset_postdata();
