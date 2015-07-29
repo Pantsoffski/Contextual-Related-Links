@@ -41,6 +41,15 @@ function contextual_related_links_settings(){
 			</select>
 		</td>
 		</tr>
+		<tr valign="top">
+		<th scope="row">How many links to the same keyword?</th></th>
+		<td>
+			<select name="contextual_related_links_links_how_many" value="<?php echo esc_attr(get_option('contextual_related_links_links_how_many')); ?>" style="width:auto;">	
+				<option value="1" <?php if (get_option('contextual_related_links_links_how_many')==1) {echo "selected"; } ?>>Only first keyword found in the content</option>
+				<option value="-1" <?php if (get_option('contextual_related_links_links_how_many')==-1) {echo "selected"; } ?>>All keywords found in the content</option>
+			</select>
+		</td>
+		</tr>
 	</table>
     
 	<?php submit_button(); ?>

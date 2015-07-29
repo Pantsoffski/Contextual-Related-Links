@@ -7,7 +7,7 @@ function pp_contextual_related_links_tags($content){
     		$taglink = get_tag_link($tag->term_id);
     		$tagname = "/".$tag->name."/";
     		$replacement = "<a href='$taglink'>$tag->name</a>";
-			$content = preg_replace($tagname, $replacement, $content, 1);
+			$content = preg_replace($tagname, $replacement, $content, get_option('contextual_related_links_include_tags'));
 		}
 	}
 	return $content;
@@ -32,20 +32,20 @@ function pp_contextual_related_links_related_tags($content){
 					'post__not_in' => array($postid)
 			);
 			$query = new WP_Query($args);
-			if($query->have_posts()){
+			if($query->have_posts()){ //if działa, chyba tablica się nie napełnia
 			    $query->the_post();
 			    $id = $query->post->ID;
 			    $tagname = "/".$tag."/";
 			    $postlink = get_permalink($id);
         		$replacement = "<a href='$postlink'>$tag</a>";
         		if(get_option('contextual_related_links_links_where')==1){ //if user wants first half of content
-					$content = preg_replace($tagname, $replacement, substr($content, 0, $contentlenght));
+					$content = preg_replace($tagname, $replacement, substr($content, 0, $contentlenght), get_option('contextual_related_links_links_how_many'));
 					$content = $content.$content2;
 				}elseif(get_option('contextual_related_links_links_where')==2){ //if user wants second half of content
-					$content = preg_replace($tagname, $replacement, substr($content, $contentlenght));
+					$content = preg_replace($tagname, $replacement, substr($content, $contentlenght), get_option('contextual_related_links_links_how_many'));
 					$content = $content1.$content;
 				}else{ //if user wants entire content
-					$content = preg_replace($tagname, $replacement, $content);
+					$content = preg_replace($tagname, $replacement, $content, get_option('contextual_related_links_links_how_many'));
 				}
 			}
 		}
@@ -76,7 +76,7 @@ function pp_contextual_related_links_related_posts_with_tags($content){
 				    $id = $query->post->ID;
 				    $postlink = get_permalink($id);
 	        		$replacement = "<a href='$postlink'>$match[0]</a>";
-					$content = preg_replace($tagname, $replacement, $content);
+					$content = preg_replace($tagname, $replacement, $content, get_option('contextual_related_links_links_how_many'));
 				}
 			}
 		}
@@ -86,7 +86,7 @@ function pp_contextual_related_links_related_posts_with_tags($content){
 }
 
 function pp_contextual_related_links_ignored_tags_ids(){
-	$ignoredtags = esc_attr(get_option('banned_tags'));
+	$ignoredtags = esc_attr(get_option('contextual_related_links_banned_tags'));
 	$search = "/(,\s+)|(\s+,)|(\s+)/i";
 	$ignoredtags = preg_replace($search, ",", $ignoredtags);
 	$ignoredtags = explode(",", $ignoredtags);
@@ -103,7 +103,7 @@ function pp_contextual_related_links_ignored_tags_ids(){
 }
 
 function pp_contextual_related_links_included_tags(){
-	$includedtags = esc_attr(get_option('include_tags'));
+	$includedtags = esc_attr(get_option('contextual_related_links_include_tags'));
 	$search = "/(,\s+)|(\s+,)|(\s+)/i";
 	$includedtags = preg_replace($search, ",", $ignoredtags);
 

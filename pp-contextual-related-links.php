@@ -46,6 +46,7 @@ function register_contextual_related_links_settings() {
 	register_setting( 'contextual-related-links-settings-group', 'contextual_related_links_include_tags');
 	register_setting( 'contextual-related-links-settings-group', 'contextual_related_links_links_type');
 	register_setting( 'contextual-related-links-settings-group', 'contextual_related_links_links_where');
+	register_setting( 'contextual-related-links-settings-group', 'contextual_related_links_links_how_many');
 }
 
 ?>
