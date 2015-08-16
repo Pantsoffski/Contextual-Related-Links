@@ -1,14 +1,34 @@
 <?php
 
-function pp_contextual_related_links_tags($content){
+function pp_contextual_related_links_tags($content){ //links all tags from post/page found in viewed content
 	if(is_singular('post')){
+		$contentlenght = strlen($content) / 2; //lenght of contet / 2
+        $content1 = substr($content, 0, $contentlenght); //first half of content
+        $content2 = substr($content, $contentlenght); //second half of content
 		$tags = get_the_tags(); //returns tags assigned to the post
 		foreach($tags as $tag) {
     		$taglink = get_tag_link($tag->term_id);
-    		$tagname = "/".$tag->name."/";
-    		$replacement = "<a href='$taglink'>$tag->name</a>";
-			$content = preg_replace($tagname, $replacement, $content, get_option('contextual_related_links_include_tags'));
+    		$tagname[] = "/".$tag->name."/i";
+    		$tagnameold = "/".$tag->name."/i";
+    		$searchedword = preg_match_all($tagnameold, $content, $match);
+    		foreach($match as $match2){ //create arrays with keywords to replace and replacement
+				foreach($match2 as $match3){
+					$replacement[] = "<a href='$taglink'>$match3</a>";
+					$macher[] = "/".$match3."/";
+				}
+			}
 		}
+		$replacement = array_unique($replacement); //removes duplicate array values
+		$macher = array_unique($macher);
+	    		if(get_option('contextual_related_links_links_where')==1){ //if user wants first half of content
+					$content = preg_replace($macher, $replacement, substr($content, 0, $contentlenght), get_option('contextual_related_links_links_how_many'));
+					$content = $content.$content2;
+				}elseif(get_option('contextual_related_links_links_where')==2){ //if user wants second half of content
+						$content = preg_replace($macher, $replacement, substr($content, $contentlenght), get_option('contextual_related_links_links_how_many'));
+						$content = $content1.$content;
+				}else{ //if user wants entire content
+						$content = preg_replace($macher, $replacement, $content, get_option('contextual_related_links_links_how_many'));
+				}
 	}
 	return $content;
 }
@@ -32,7 +52,7 @@ function pp_contextual_related_links_related_tags($content){
 					'post__not_in' => array($postid)
 			);
 			$query = new WP_Query($args);
-			if($query->have_posts()){ //if działa, chyba tablica się nie napełnia
+			if($query->have_posts()){
 			    $query->the_post();
 			    $id = $query->post->ID;
 			    $tagname = "/".$tag."/";
